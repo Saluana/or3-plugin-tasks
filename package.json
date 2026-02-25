@@ -1,0 +1,39 @@
+{
+  "name": "or3-plugin-tasks",
+  "version": "0.1.0",
+  "description": "Installable OR3 Tasks workspace plugin (Nuxt module + admin zip)",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./nuxt": "./src/module.ts"
+  },
+  "files": [
+    "src",
+    "plugin.client.ts",
+    "or3.manifest.json",
+    "scripts"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build:zip": "bun run scripts/build-zip.mjs",
+    "type-check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@nuxt/kit": "^3.0.0 || ^4.0.0",
+    "nuxt": "^3.0.0 || ^4.0.0"
+  },
+  "devDependencies": {
+    "@nuxt/kit": "^4.1.0",
+    "@types/node": "^24.10.1",
+    "fflate": "^0.8.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@vueuse/core": "^13.9.0",
+    "or3-scroll": "^0.0.3",
+    "zod": "^4.1.13"
+  }
+}
