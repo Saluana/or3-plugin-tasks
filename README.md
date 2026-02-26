@@ -1,4 +1,4 @@
-<![CDATA[<div align="center">
+<div align="center">
 
 # 📋 OR3 Tasks Plugin
 
@@ -135,4 +135,3 @@ If installed via NPM:
 ## License
 
 MIT
-]]>
