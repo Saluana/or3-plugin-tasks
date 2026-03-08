@@ -178,12 +178,26 @@ export function useTaskListService(api?: PanePluginApi | null) {
                 const dueAt = normalizeDueAt(
                     patch.due_at === undefined ? task.due_at : patch.due_at
                 );
+                const hasDueAtPatch = Object.prototype.hasOwnProperty.call(
+                    patch,
+                    'due_at'
+                );
+                const hasDueNotifiedAtPatch = Object.prototype.hasOwnProperty.call(
+                    patch,
+                    'due_notified_at'
+                );
                 const status = patch.status ?? task.status;
                 const label =
                     patch.title && task.label_source !== 'manual'
                         ? inferLocalLabel(patch.title)
                         : task.label;
-                const dueNotifiedAt = patch.due_notified_at ?? task.due_notified_at ?? null;
+                const dueAtChanged =
+                    hasDueAtPatch && dueAt !== normalizeDueAt(task.due_at);
+                const dueNotifiedAt = hasDueNotifiedAtPatch
+                    ? patch.due_notified_at ?? null
+                    : dueAtChanged
+                      ? null
+                      : task.due_notified_at ?? null;
 
                 updated = {
                     ...task,

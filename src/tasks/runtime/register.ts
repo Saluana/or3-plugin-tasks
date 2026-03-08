@@ -23,7 +23,7 @@ export function mountTasksRuntime(): () => void {
     const hooks = useHooks();
     const service = useTaskListService();
 
-    const { registerPaneApp } = usePaneApps();
+    const { registerPaneApp, unregisterPaneApp } = usePaneApps();
 
     registerPaneApp({
         id: TASKS_PLUGIN_ID,
@@ -220,6 +220,7 @@ export function mountTasksRuntime(): () => void {
     }
 
     return () => {
+        unregisterPaneApp(TASKS_PLUGIN_ID);
         unregisterSidebar();
         unregisterTools();
         if (dueCheckTimer) {
