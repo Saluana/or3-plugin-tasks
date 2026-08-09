@@ -1,6 +1,8 @@
 {
   "name": "or3-plugin-tasks",
   "version": "0.1.0",
+  "private": true,
+  "publishNote": "Development-only until standalone Chat contract qualification exists.",
   "description": "Installable OR3 Tasks workspace plugin (Nuxt module + admin zip)",
   "license": "MIT",
   "type": "module",
