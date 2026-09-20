@@ -2,7 +2,7 @@ import { expect, test } from 'bun:test';
 import { createPortablePlugin } from '@or3/plugin-sdk';
 import { createPortableTestHost } from '@or3/plugin-sdk/testing';
 import { createTasksPlugin, TASKS_MANIFEST } from './client.mjs';
-import { readStore, taskFields, validateStore, visibleTasks } from './lib/tasks.mjs';
+import { readStore, taskFields, validateStore, visibleTasks } from './tasks.mjs';
 const KEY='task-lists-v1';
 async function activate(storage, deny) {
   const host=createPortableTestHost({approvedGrants:TASKS_MANIFEST.requestedGrants,initialStorage:storage});

@@ -1,6 +1,6 @@
 import { createPortableClient, createPortablePlugin, defineOr3Plugin, definePortableUi, ui } from '@or3/plugin-sdk';
 import { TASKS_MANIFEST } from './manifest.mjs';
-import { LABELS, STATUSES, newId, text, readStore, validateStore, taskFields, visibleTasks } from './lib/tasks.mjs';
+import { LABELS, STATUSES, newId, text, readStore, validateStore, taskFields, visibleTasks } from './tasks.mjs';
 export { TASKS_MANIFEST };
 const KEY = 'task-lists-v1';
 const preview = (value, limit = 80) => value.length > limit ? value.slice(0, limit - 1) + '…' : value;
