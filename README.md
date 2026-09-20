@@ -1,46 +1,58 @@
-# OR3 Tasks Plugin (development-only)
+# OR3 Tasks
 
-The OR3 Tasks Plugin adds task lists, a sidebar page, notifications, and task
-tools to an OR3 Chat source checkout. It is not a managed Cloud extension:
-immutable Cloud images do not rebuild uploaded source. The package is marked
-private so an unqualified archive cannot be published accidentally.
+Version 0.2.0 is an installable Plugin Runtime V2 package, `or3sal.tasks`, for
+OR3 Chat 0.3.x with Plugin API 2.x and `or3-portable-client-v1` support.
 
-## Source-checkout installation
+It provides task lists, notes, due dates, work/home/health labels, difficulty,
+subtasks, completion tracking, search, and manual/due/difficulty sorting. Tasks
+persist in host-managed plugin storage. The isolated browser worker requests
+only `storage.read` and `storage.write`; it makes no network or AI requests.
+Deletion of a task or list requires confirmation. Limits are 12 lists, 100 tasks,
+12 subtasks per task and 60 KB of stored JSON. Long titles are abbreviated in
+summaries; the task editor retains the complete title.
 
-From an OR3 Chat checkout, add this repository as a local module and enable
-`or3-plugin-tasks/nuxt` in `nuxt.config.ts`:
+## Install
 
-```bash
-bun add file:../or3-plugin-tasks
-bun run build:zip
+Install the reviewed `or3sal.tasks` release through the marketplace in OR3 Chat,
+approve its storage grants and finish setup. Open the portable plugin view and
+select **Open your task lists**, then add a task. This release is initially being
+qualified against the staging marketplace and the local Chat development host.
+
+## Develop and package
+
+Use Bun 1.3.6 or newer. The current SDK source is 2.0.0 and is not yet available
+on npm. This repository pins a packed copy from the OR3 Chat SDK at commit
+`e3147331` in `.authoring/vendor/or3-plugin-sdk-2.0.0.tgz` (SHA-256
+`dbb5e6846d1e1e7cb7a669ed1ca6250e53d97a55fd7c723415a91d7826cd68e6`).
+The SDK's license and third-party notices are included in that tarball.
+
+```sh
+bun install --frozen-lockfile
+bun test
+bun run profile:check
+bun run build
+bun run pack
+bun --bun node_modules/.bin/or3-plugin inspect .artifacts/or3sal.tasks-0.2.0.or3pkg
 ```
 
-The ZIP is useful for archive inspection and development fixtures only. Do not
-upload it to a managed OR3 Cloud instance. Run the source application and open
-the Tasks page after restarting the dev server.
+Build bundles the worker and SDK into `dist/client.mjs`. Pack **the built dist
+tree**, never the unbundled source; the result is
+`.artifacts/or3sal.tasks-0.2.0.or3pkg`. Tests and `.authoring`/`.legacy` are excluded
+from the runtime package. Submit an exact source archive alongside it.
 
-## Qualification
+The manifest, package policy and setup descriptor are generated together from
+`.authoring/profile.config.mjs`. Run `bun run profile:generate` after changing
+that configuration; `profile:check` detects stale generated files.
 
-```bash
-bun run type-check
-bun run build:zip
-```
+## Legacy compatibility
 
-The typecheck currently requires the Chat source contract because this plugin
-imports Chat composables and Nuxt virtual modules. Until a standalone contract
-fixture is added, this repository remains development-only and has no release
-workflow.
-
-## Plugin identity
-
-Keep the stable ID `or3-tasks` in `or3.manifest.json`, `plugin.client.ts`, and
-`src/tasks/runtime/register.ts`.
-
-## Uninstalling
-
-Remove `or3-plugin-tasks/nuxt` from the source checkout's `nuxt.config.ts` and
-run `bun remove or3-plugin-tasks`.
+The old Nuxt module is archived under `.legacy` for reference. It is not shipped
+or registered by this package. Its private Chat AI tools, sidebar integration
+and due-date notifications are not supported by the portable plugin contract.
+Existing `or3-tasks` data is not migrated or modified; this namespaced plugin has
+its own versioned storage. Do not add this package as a Nuxt module.
 
 ## License
 
-MIT
+GPL-3.0-only. The runtime includes the GPL-3.0 OR3 SDK; see `LICENSE` and
+`THIRD_PARTY_NOTICES`. Archived legacy source retains its original MIT declaration.

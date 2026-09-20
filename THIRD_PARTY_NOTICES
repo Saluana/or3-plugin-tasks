@@ -1,0 +1,4 @@
+OR3 Tasks 0.2.0 bundles @or3/plugin-sdk 2.0.0 runtime code.
+Copyright (C) 2025 @Saluana. Licensed under GPL-3.0; see LICENSE.
+The SDK bundles no third-party runtime code. Bun is a build tool and is not
+included in the delivered runtime.

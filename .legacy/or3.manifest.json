@@ -1,0 +1,13 @@
+{
+  "kind": "plugin",
+  "id": "or3-tasks",
+  "name": "OR3 Tasks",
+  "version": "0.1.0",
+  "description": "Extracted Tasks plugin runtime",
+  "capabilities": ["tasks", "pane", "sidebar", "tools"],
+  "runtime": {
+    "client": {
+      "entry": "plugin.client.ts"
+    }
+  }
+}

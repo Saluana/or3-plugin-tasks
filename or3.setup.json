@@ -1,0 +1,15 @@
+{
+  "connections": [],
+  "fields": [],
+  "firstAction": {
+    "label": "Open your task lists",
+    "operationId": "storage.read",
+    "usesSampleContext": false
+  },
+  "settingsSchemaPath": "settings.schema.json",
+  "setupVersion": 1,
+  "testAction": {
+    "deadlineMs": 5000,
+    "operationId": "storage.read"
+  }
+}
