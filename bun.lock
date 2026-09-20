@@ -5,14 +5,14 @@
     "": {
       "name": "or3-plugin-tasks",
       "dependencies": {
-        "@or3/plugin-sdk": "2.0.0",
+        "@or3/plugin-sdk": "2.0.1-dev.20260920.3",
       },
     },
   },
   "overrides": {
-    "@or3/plugin-sdk": "file:.authoring/vendor/or3-plugin-sdk-2.0.0.tgz",
+    "@or3/plugin-sdk": "file:.authoring/vendor/or3-plugin-sdk-2.0.1-dev.20260920.3.tgz",
   },
   "packages": {
-    "@or3/plugin-sdk": ["@or3/plugin-sdk@.authoring/vendor/or3-plugin-sdk-2.0.0.tgz", { "bin": { "or3-plugin": "./bin/or3-plugin.mjs" } }],
+    "@or3/plugin-sdk": ["@or3/plugin-sdk@.authoring/vendor/or3-plugin-sdk-2.0.1-dev.20260920.3.tgz", { "bin": { "or3-plugin": "./bin/or3-plugin.mjs" } }],
   }
 }

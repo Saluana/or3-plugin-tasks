@@ -7,7 +7,8 @@
   "policyVersion": 1,
   "profile": "or3-portable-client-v1",
   "requiredFeatures": [
-    "or3-portable-client-v1"
+    "or3-portable-client-v1",
+    "or3-portable-workspace-v1"
   ],
   "writes": [
     "storage.write"
