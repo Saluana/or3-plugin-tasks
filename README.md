@@ -6,7 +6,7 @@ OR3 Chat 0.3.x with Plugin API 2.x and `or3-portable-workspace-v1` support.
 
 The OR3 sidebar contains lists and open counts. Selecting a list opens the Tasks
 workspace tab with compact completion rows, quick add, search, filters and sorting.
-The plugin includes a custom Tasks icon at `assets/tasks-icon.webp`.
+The plugin includes a custom Tasks icon at `tasks-icon.webp`.
 Task details stay beside the list: notes, a date picker, priority, label and subtasks.
 List and task deletion require confirmation and offer undo during the session.
 Eleven optional chat tools use the same storage and require `tools.register.client`;

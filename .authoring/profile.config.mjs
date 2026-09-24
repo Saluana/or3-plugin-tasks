@@ -9,7 +9,7 @@ export function buildArtifacts() {
   });
   const manifest = applyPortableProfileToManifest({
     manifestVersion: 2, kind: 'plugin', id: 'or3sal.tasks', name: 'OR3 Tasks', version: '0.3.2', license: 'GPL-3.0-only',
-    icon: 'assets/tasks-icon.webp',
+    icon: 'tasks-icon.webp',
     description: 'Organize task lists with subtasks, notes, labels, due dates and progress.',
     engines: { or3: '^0.3.0', pluginApi: '^2.0.0 || 2.0.1-dev.20260920.3' },
     runtime: { client: { entry: 'client.mjs', format: 'esm', isolation: 'worker' } },

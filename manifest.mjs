@@ -5,7 +5,7 @@ export const TASKS_MANIFEST = Object.freeze({
   "name": "OR3 Tasks",
   "version": "0.3.2",
   "license": "GPL-3.0-only",
-  "icon": "assets/tasks-icon.webp",
+  "icon": "tasks-icon.webp",
   "description": "Organize task lists with subtasks, notes, labels, due dates and progress.",
   "engines": {
     "or3": "^0.3.0",
