@@ -277,6 +277,13 @@ test('the chat tools operate on the same store as the interface', async () => {
     'From chat',
     'From the pane',
   ]);
+  const foundByList = await h.tool('or3sal_tasks_search_lists', {
+    query: h.state.lists[0].title,
+  });
+  expect(foundByList.lists[0].tasks.map((task) => task.title).sort()).toEqual([
+    'From chat',
+    'From the pane',
+  ]);
 
   await h.tool('or3sal_tasks_update_item', { listId, taskId: added.id, status: 'done' });
   expect(h.state.lists[0].tasks.find((task) => task.id === added.id).status).toBe('done');

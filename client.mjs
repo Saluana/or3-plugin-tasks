@@ -481,14 +481,19 @@ export function createTasksPlugin(client = createPortableClient()) {
       const query = text(args.query ?? '', 160).toLowerCase();
       return {
         lists: state.lists
-          .map((entry) => ({
-            ...entry,
-            tasks: query
-              ? entry.tasks.filter((task) =>
-                  `${task.title} ${task.notes}`.toLowerCase().includes(query)
-                )
-              : entry.tasks,
-          }))
+          .map((entry) => {
+            const titleMatches = entry.title.toLowerCase().includes(query);
+            return {
+              ...entry,
+              // A list-title match is a lookup for that list, so return its
+              // complete task snapshot. Task-text searches stay filtered.
+              tasks: !query || titleMatches
+                ? entry.tasks
+                : entry.tasks.filter((task) =>
+                    `${task.title} ${task.notes}`.toLowerCase().includes(query)
+                  ),
+            };
+          })
           .filter(
             (entry) => !query || entry.title.toLowerCase().includes(query) || entry.tasks.length > 0
           ),
