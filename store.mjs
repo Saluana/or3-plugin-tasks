@@ -26,6 +26,17 @@ import {
 const documentKey = (listId) => `task-list-v2:${listId}`;
 const clone = (value) => JSON.parse(JSON.stringify(value));
 const same = (left, right) => JSON.stringify(left) === JSON.stringify(right);
+const MAX_PENDING_CLEANUP = 200;
+
+function pendingCleanupIds(value) {
+    if (value === undefined) return [];
+    if (!Array.isArray(value) || value.length > MAX_PENDING_CLEANUP ||
+        value.some((id) => typeof id !== 'string' || !/^[a-zA-Z0-9-]{1,80}$/.test(id)) ||
+        new Set(value).size !== value.length) {
+        throw new Error('Stored task cleanup state is invalid. Nothing has been overwritten.');
+    }
+    return value;
+}
 
 /**
  * Wraps the storage capability with the validated task model. Nothing here is
@@ -76,6 +87,7 @@ export function createTaskStore(storage) {
     }
 
     async function adoptRoot(nextRoot) {
+        pendingCleanupIds(nextRoot.cleanupPending);
         const entries = [];
         for (const entry of nextRoot.lists) {
             const stored = await read(documentKey(entry.id));
@@ -83,6 +95,33 @@ export function createTaskStore(storage) {
         }
         root = nextRoot;
         documents = new Map(entries);
+    }
+
+    // The index commit includes removed IDs, so cleanup can be retried after a
+    // failed delete or a restart without deleting a restored list document.
+    async function flushCleanup() {
+        const pending = pendingCleanupIds(root?.cleanupPending);
+        if (pending.length === 0) return;
+        const kept = new Set(root.lists.map((entry) => entry.id));
+        const remaining = [];
+        for (const id of pending) {
+            if (kept.has(id)) continue;
+            try {
+                if (await read(documentKey(id)) !== null) {
+                    await remove(documentKey(id));
+                }
+            } catch {
+                remaining.push(id);
+            }
+        }
+        if (same(pending, remaining)) return;
+        const cleanedRoot = { ...root, cleanupPending: remaining };
+        try {
+            await write(ROOT_KEY, cleanedRoot);
+            root = cleanedRoot;
+        } catch {
+            // The original committed queue stays durable and retries later.
+        }
     }
 
     /**
@@ -94,6 +133,7 @@ export function createTaskStore(storage) {
         const stored = await read(ROOT_KEY);
         if (stored !== null && stored !== undefined) {
             await adoptRoot(validateRoot(stored));
+            await flushCleanup();
             return { migrated: false };
         }
         const legacy = await read(LEGACY_KEY);
@@ -141,6 +181,15 @@ export function createTaskStore(storage) {
             (entry) => !documents.has(entry.id) || !same(documents.get(entry.id), nextDocuments.get(entry.id))
         );
         const removedDocuments = [...documents.keys()].filter((id) => !kept.has(id));
+        const pending = pendingCleanupIds(nextRoot.cleanupPending);
+        const cleanupPending = [...new Set([...pending, ...removedDocuments])]
+            .filter((id) => !kept.has(id));
+        if (cleanupPending.length > MAX_PENDING_CLEANUP) {
+            throw new Error('Old task-list cleanup is unavailable. Retry after storage recovers.');
+        }
+        if (cleanupPending.length > 0 || nextRoot.cleanupPending !== undefined) {
+            nextRoot.cleanupPending = cleanupPending;
+        }
         const rootChanged = !same(root, nextRoot);
 
         // Documents first, then the index, then removals. A write that fails
@@ -152,9 +201,10 @@ export function createTaskStore(storage) {
         if (rootChanged) await write(ROOT_KEY, nextRoot);
         root = nextRoot;
         documents = new Map(nextRoot.lists.map((entry) => [entry.id, nextDocuments.get(entry.id)]));
-        for (const id of removedDocuments) await remove(documentKey(id));
+        await flushCleanup();
         return outcome;
     }
 
-    return { load, lists, find, mutate, loaded: () => root !== null };
+    return { load, lists, find, mutate, loaded: () => root !== null,
+        pendingCleanupCount: () => pendingCleanupIds(root?.cleanupPending).length };
 }

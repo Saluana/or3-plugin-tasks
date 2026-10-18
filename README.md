@@ -1,11 +1,12 @@
 # OR3 Tasks
 
-Version 0.3.1 is a Plugin Runtime V2 candidate, `or3sal.tasks`, prepared for
+Version 0.3.2 is a Plugin Runtime V2 candidate, `or3sal.tasks`, prepared for
 staging publication on
 OR3 Chat 0.3.x with Plugin API 2.x and `or3-portable-workspace-v1` support.
 
 The OR3 sidebar contains lists and open counts. Selecting a list opens the Tasks
 workspace tab with compact completion rows, quick add, search, filters and sorting.
+The plugin includes a custom Tasks icon at `tasks-icon.webp`.
 Task details stay beside the list: notes, a date picker, priority, label and subtasks.
 List and task deletion require confirmation and offer undo during the session.
 Eleven optional chat tools use the same storage and require `tools.register.client`;
@@ -39,12 +40,12 @@ bun test
 bun run profile:check
 bun run build
 bun run pack
-bun --bun node_modules/.bin/or3-plugin inspect .artifacts/or3sal.tasks-0.3.1.or3pkg
+bun --bun node_modules/.bin/or3-plugin inspect .artifacts/or3sal.tasks-0.3.2.or3pkg
 ```
 
 Build bundles the worker and SDK into `dist/client.mjs`. Pack **the built dist
 tree**, never the unbundled source; the result is
-`.artifacts/or3sal.tasks-0.3.1.or3pkg`. Tests and `.authoring`/`.legacy` are excluded
+`.artifacts/or3sal.tasks-0.3.2.or3pkg`. Tests and `.authoring`/`.legacy` are excluded
 from the runtime package. Submit an exact source archive alongside it.
 
 The manifest, package policy and setup descriptor are generated together from

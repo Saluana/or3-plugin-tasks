@@ -8,7 +8,8 @@ export function buildArtifacts() {
     firstAction: { operationId: 'storage.read', label: 'Open your task lists', usesSampleContext: false },
   });
   const manifest = applyPortableProfileToManifest({
-    manifestVersion: 2, kind: 'plugin', id: 'or3sal.tasks', name: 'OR3 Tasks', version: '0.3.1', license: 'GPL-3.0-only',
+    manifestVersion: 2, kind: 'plugin', id: 'or3sal.tasks', name: 'OR3 Tasks', version: '0.3.2', license: 'GPL-3.0-only',
+    icon: 'tasks-icon.webp',
     description: 'Organize task lists with subtasks, notes, labels, due dates and progress.',
     engines: { or3: '^0.3.0', pluginApi: '^2.0.0 || 2.0.1-dev.20260920.3' },
     runtime: { client: { entry: 'client.mjs', format: 'esm', isolation: 'worker' } },

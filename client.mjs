@@ -69,6 +69,7 @@ export function createTasksPlugin(client = createPortableClient()) {
     expanded: new Set(),
     error: '',
     notice: '',
+    cleanupNotice: '',
     undo: null,
     pending: null,
     listSettings: false,
@@ -435,6 +436,7 @@ export function createTasksPlugin(client = createPortableClient()) {
     const nodes = [];
     if (state.error) nodes.push({ type: 'text', text: state.error, tone: 'danger' });
     if (state.notice) nodes.push({ type: 'text', text: state.notice, tone: 'success' });
+    if (state.cleanupNotice) nodes.push({ type: 'text', text: state.cleanupNotice, tone: 'warning' });
     const bannerNode = banner();
     if (bannerNode) nodes.push(bannerNode);
     if (!state.loaded) {
@@ -459,13 +461,16 @@ export function createTasksPlugin(client = createPortableClient()) {
     );
   }
 
-  /** One validated write: either it lands completely or nothing is stored. */
+  /** Sync after the index commit; orphan cleanup is retryable maintenance. */
   async function save(change) {
     if (state.busy) throw new Error('A save is already in progress.');
     state.busy = true;
     try {
       const outcome = await store.mutate(change);
       sync();
+      state.cleanupNotice = store.pendingCleanupCount() > 0
+        ? 'Old list data could not be removed; cleanup will retry when tasks reload or you save again.'
+        : '';
       return outcome;
     } finally {
       state.busy = false;
@@ -481,14 +486,19 @@ export function createTasksPlugin(client = createPortableClient()) {
       const query = text(args.query ?? '', 160).toLowerCase();
       return {
         lists: state.lists
-          .map((entry) => ({
-            ...entry,
-            tasks: query
-              ? entry.tasks.filter((task) =>
-                  `${task.title} ${task.notes}`.toLowerCase().includes(query)
-                )
-              : entry.tasks,
-          }))
+          .map((entry) => {
+            const titleMatches = entry.title.toLowerCase().includes(query);
+            return {
+              ...entry,
+              // A list-title match is a lookup for that list, so return its
+              // complete task snapshot. Task-text searches stay filtered.
+              tasks: !query || titleMatches
+                ? entry.tasks
+                : entry.tasks.filter((task) =>
+                    `${task.title} ${task.notes}`.toLowerCase().includes(query)
+                  ),
+            };
+          })
           .filter(
             (entry) => !query || entry.title.toLowerCase().includes(query) || entry.tasks.length > 0
           ),
@@ -914,6 +924,9 @@ export function createTasksPlugin(client = createPortableClient()) {
     await store.load();
     state.loaded = true;
     sync();
+    state.cleanupNotice = store.pendingCleanupCount() > 0
+      ? 'Old list data could not be removed; cleanup will retry when tasks reload or you save again.'
+      : '';
   }
 
   const definition = defineOr3Plugin({

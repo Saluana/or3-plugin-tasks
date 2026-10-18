@@ -155,6 +155,30 @@ test('lists can be created, renamed, deleted and restored', async () => {
   expect(h.state.lists[1].title).toBe('Home');
 });
 
+test('a committed list deletion stays successful when orphan cleanup fails and retries after reload', async () => {
+  const h = await activate(undefined, 'storage.delete');
+  await h.act('tasks.create-list', { newListTitle: 'Temporary' });
+  const removedId = h.state.listId;
+  await h.act('tasks.ask-delete-list');
+
+  const result = await h.rail('tasks.confirm-delete');
+  expect(result.ok).toBe(true);
+  expect(h.state.lists.some((list) => list.id === removedId)).toBe(false);
+  expect(h.state.error).toBe('');
+  expect(h.state.cleanupNotice).toContain('cleanup will retry');
+  expect(h.storage.get(ROOT_KEY).cleanupPending).toContain(removedId);
+  expect(h.storage.has(docKey(removedId))).toBe(true);
+
+  await h.act('tasks.create-list', { newListTitle: 'Another' });
+  expect(h.state.notice).toContain('Another');
+  expect(h.state.cleanupNotice).toContain('cleanup will retry');
+
+  const restored = await activate(snapshot(h.storage));
+  expect(restored.state.lists.some((list) => list.id === removedId)).toBe(false);
+  expect(restored.storage.has(docKey(removedId))).toBe(false);
+  expect(restored.storage.get(ROOT_KEY).cleanupPending).toEqual([]);
+});
+
 test('switching lists cancels a pending deletion', async () => {
   const h = await activate();
   await h.act('tasks.create-list', { newListTitle: 'Second' });
@@ -274,6 +298,13 @@ test('the chat tools operate on the same store as the interface', async () => {
   await h.act('tasks.quick-add', { quickTitle: 'From the pane' });
   const found = await h.tool('or3sal_tasks_search_lists', { query: 'from' });
   expect(found.lists[0].tasks.map((task) => task.title).sort()).toEqual([
+    'From chat',
+    'From the pane',
+  ]);
+  const foundByList = await h.tool('or3sal_tasks_search_lists', {
+    query: h.state.lists[0].title,
+  });
+  expect(foundByList.lists[0].tasks.map((task) => task.title).sort()).toEqual([
     'From chat',
     'From the pane',
   ]);

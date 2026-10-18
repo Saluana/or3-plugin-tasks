@@ -1,6 +1,6 @@
 {
   "name": "or3-plugin-tasks",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "description": "Portable task lists for OR3: tasks, subtasks, labels, due dates and progress.",
   "license": "GPL-3.0-only",
@@ -17,7 +17,7 @@
     "test": "bun test client.test.mjs",
     "validate": "bun --bun node_modules/.bin/or3-plugin validate .",
     "build": "bun run profile:check && bun --bun node_modules/.bin/or3-plugin build .",
-    "pack": "bun --bun node_modules/.bin/or3-plugin pack dist --archive .artifacts/or3sal.tasks-0.3.1.or3pkg",
+    "pack": "bun --bun node_modules/.bin/or3-plugin pack dist --archive .artifacts/or3sal.tasks-0.3.2.or3pkg",
     "build:zip": "bun run build && bun run pack"
   },
   "overrides": {

@@ -1,6 +1,6 @@
 # OR3 Tasks privacy
 
-This statement describes the portable `or3sal.tasks` 0.2.0 plugin.
+This statement describes the portable `or3sal.tasks` 0.3.2 plugin.
 
 ## Data used
 
@@ -11,10 +11,13 @@ that storage, its backups and access to the OR3 Chat instance.
 
 ## Sharing and connections
 
-This plugin has no network, AI, analytics, advertising or external account
-integration. Its only requested permissions are `storage.read` and
-`storage.write`. It does not read your conversations or documents and does not
-send task data to the publisher or an outside service. OR3 Chat itself and the
+The plugin requests `storage.read`, `storage.write`, and
+`tools.register.client`. Its optional chat tools are disabled by default and
+use the same task storage when enabled. If you ask an assistant to use a Tasks
+tool, its task data or result can become part of that conversation and be sent
+to the AI provider configured by your OR3 Chat host. The plugin does not read
+unrelated conversations or documents and makes no direct network, AI,
+analytics, advertising, or publisher requests. OR3 Chat itself and the
 marketplace have their own data handling practices, separate from this plugin.
 
 ## Removing data
